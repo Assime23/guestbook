@@ -1,15 +1,4 @@
-# Please choose from the below set of Docker commands to complete your Dockerfile:
-
-# COPY
-# RUN
-# ADD
-# EXPOSE
-# FROM
-# CMD
-# PUSH
-# PULL
-# WORKDIR
-
+# Étape 1 : Construction de l'application Go
 FROM golang:1.18 AS builder
 
 WORKDIR /app
@@ -21,10 +10,13 @@ RUN go mod tidy
 
 RUN go build -o main main.go
 
+# Étape 2 : Création de l'image finale
 FROM ubuntu:18.04
 
+# Copier le binaire depuis l'étape builder
 COPY --from=builder /app/main /app/guestbook
 
+# Copier les fichiers statiques
 COPY public/index.html /app/public/index.html
 COPY public/script.js /app/public/script.js
 COPY public/style.css /app/public/style.css
@@ -33,4 +25,5 @@ COPY public/jquery.min.js /app/public/jquery.min.js
 WORKDIR /app
 
 CMD ["./guestbook"]
+
 EXPOSE 3000
